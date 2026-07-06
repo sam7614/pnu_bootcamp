@@ -1,0 +1,13 @@
+outputs
+output
+tmp
+*.pdf
+*.md
+server-*.log
+.git
+.agents
+.codex
+.npm-local
+.vercel-cli
+.vercel-local
+.vercel-local2
