@@ -368,6 +368,7 @@ const state = {
   dashboardSemester: "all",
   dashboardStage: "all",
   dashboardDrilldown: null,
+  stageOverviewDrilldown: null,
   dashboardPage: 1,
   dashboardCounselingPage: 1,
   courseModal: null,
@@ -952,6 +953,8 @@ function renderDashboard() {
 
   return `
     <section class="view">
+      ${renderStageOverview(dashboardRows)}
+      ${renderStageOverviewDrilldown(dashboardRows)}
       ${renderCurrentTrackOverview(dashboardRows)}
       <div class="toolbar dashboard-filterbar">
         <div>
@@ -1010,6 +1013,162 @@ function renderDashboard() {
         </section>
       </div>
     </section>
+  `;
+}
+
+function renderStageOverview(rows) {
+  const colors = ["#0b3a75", "#0f9f8f", "#c9364c"];
+  return `
+    <section class="panel stage-overview-panel">
+      <div class="panel-header">
+        <div>
+          <h3 class="panel-title">전체 과정 현황</h3>
+          <p class="panel-subtitle">${h(dashboardTermLabel())} 기준으로 초급, 중급, 고급 이수자와 이수진행률을 봅니다.</p>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="stage-overview-grid">
+          ${STAGES.map((stage, index) => renderStageOverviewCard(stage, rows, colors[index] || "#0b3a75")).join("")}
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function renderStageOverviewCard(stage, rows, color) {
+  const summary = stageOverviewSummary(rows, stage);
+  const active = state.stageOverviewDrilldown === stage;
+  return `
+    <button class="stage-overview-card ${active ? "is-active" : ""}" type="button" data-action="toggle-stage-overview" data-stage="${h(stage)}" aria-expanded="${active}" style="--stage-color:${color}">
+      <span class="stage-overview-card-head">
+        <span class="stage-overview-title">${h(stage)} 이수자</span>
+        <span class="stage-overview-count">${summary.completed}명</span>
+      </span>
+      <span class="stage-overview-rate">
+        <strong>이수진행률 ${summary.average}%</strong>
+        <span>대상 ${summary.total}명 · 진행중 ${summary.inProgress}명</span>
+      </span>
+      <span class="progress" aria-label="${h(stage)} 평균 이수진행률">
+        <span style="width:${summary.average}%; --bar-color:${color}"></span>
+      </span>
+      <span class="stage-overview-meta">클릭하면 ${h(stage)} 하위 트랙별 이수자 현황을 봅니다.</span>
+    </button>
+  `;
+}
+
+function stageOverviewSummary(rows, stage) {
+  const trackSummaries = stageTrackSummaries(rows, stage);
+  const total = trackSummaries.reduce((sum, item) => sum + item.total, 0);
+  const completed = trackSummaries.reduce((sum, item) => sum + item.completed, 0);
+  const inProgress = trackSummaries.reduce((sum, item) => sum + item.inProgress, 0);
+  const average = total
+    ? Math.round(trackSummaries.reduce((sum, item) => sum + item.rateSum, 0) / total)
+    : 0;
+  return { total, completed, inProgress, average, trackSummaries };
+}
+
+function stageTrackSummaries(rows, stage) {
+  return TRACKS
+    .map((track) => {
+      const modules = curriculumModules(track.id).filter((module) => module.stage === stage);
+      if (!modules.length) return null;
+      const students = rows.filter((student) => student.targetTrack === track.id);
+      const studentSummaries = students.map((student) => {
+        const rate = stageCompletionRate(student, track.id, stage);
+        const completedModules = stageCompletedModuleCount(student, track.id, stage);
+        return { student, rate, completedModules };
+      });
+      return {
+        track,
+        modules,
+        students: studentSummaries,
+        total: studentSummaries.length,
+        completed: studentSummaries.filter((item) => item.rate >= 100).length,
+        inProgress: studentSummaries.filter((item) => item.rate > 0 && item.rate < 100).length,
+        notStarted: studentSummaries.filter((item) => item.rate === 0).length,
+        rateSum: studentSummaries.reduce((sum, item) => sum + item.rate, 0),
+        average: studentSummaries.length
+          ? Math.round(studentSummaries.reduce((sum, item) => sum + item.rate, 0) / studentSummaries.length)
+          : 0
+      };
+    })
+    .filter(Boolean);
+}
+
+function stageCompletedModuleCount(student, trackId, stage) {
+  const modules = curriculumModules(trackId).filter((module) => module.stage === stage);
+  return modules.filter((module) => studentHasDashboardCompletion(student, module.id)).length;
+}
+
+function renderStageOverviewDrilldown(rows) {
+  if (!state.stageOverviewDrilldown) return "";
+  const stage = state.stageOverviewDrilldown;
+  const summary = stageOverviewSummary(rows, stage);
+
+  return `
+    <section class="panel stage-overview-drilldown">
+      <div class="panel-header">
+        <div>
+          <h3 class="panel-title">${h(stage)} 하위 트랙별 이수자 현황</h3>
+          <p class="panel-subtitle">대상 ${summary.total}명 · 이수 완료 ${summary.completed}명 · 평균 이수진행률 ${summary.average}%</p>
+        </div>
+        <button class="button ghost" type="button" data-action="close-stage-overview" aria-label="${h(stage)} 현황 닫기">닫기</button>
+      </div>
+      <div class="panel-body">
+        <div class="stage-track-grid">
+          ${summary.trackSummaries.map((item) => renderStageTrackCard(item, stage)).join("")}
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function renderStageTrackCard(item, stage) {
+  const visibleStudents = item.students
+    .slice()
+    .sort((a, b) => b.rate - a.rate || a.student.name.localeCompare(b.student.name, "ko"))
+    .slice(0, 5);
+  return `
+    <article class="stage-track-card" style="--track-color:${item.track.color}">
+      <div class="stage-track-head">
+        <span class="track-chip"><span class="track-dot" style="--track-color:${item.track.color}"></span>${h(item.track.name)}</span>
+        <strong>${item.average}%</strong>
+      </div>
+      <p class="stage-track-desc">${h(stage)} 과정 ${item.modules.length}개 모듈 기준</p>
+      <div class="progress" aria-label="${h(item.track.name)} ${h(stage)} 평균 이수진행률">
+        <span style="width:${item.average}%; --bar-color:${item.track.color}"></span>
+      </div>
+      <div class="stage-track-stats">
+        <span><strong>${item.total}</strong><small>대상</small></span>
+        <span><strong>${item.completed}</strong><small>이수</small></span>
+        <span><strong>${item.inProgress}</strong><small>진행</small></span>
+        <span><strong>${item.notStarted}</strong><small>미착수</small></span>
+      </div>
+      <div class="stage-track-modules">
+        ${item.modules.map((module) => `<span>${h(module.title)}</span>`).join("")}
+      </div>
+      <div class="stage-track-students">
+        ${visibleStudents.length
+          ? visibleStudents.map((entry) => renderStageStudentMini(entry, item.modules.length)).join("")
+          : `<p class="empty-inline">대상 학생 없음</p>`}
+      </div>
+    </article>
+  `;
+}
+
+function renderStageStudentMini(entry, moduleCount) {
+  const label = entry.rate >= 100 ? "이수 완료" : entry.rate > 0 ? "진행중" : "미착수";
+  return `
+    <button class="stage-track-student" type="button" data-action="select-student" data-id="${h(entry.student.id)}">
+      <span>
+        <strong>${h(entry.student.name)}</strong>
+        <small>${h(entry.student.major)} · ${h(entry.student.grade)}학년</small>
+      </span>
+      <span>
+        <strong>${entry.rate}%</strong>
+        <small>${entry.completedModules}/${moduleCount} · ${h(label)}</small>
+      </span>
+    </button>
   `;
 }
 
@@ -3764,14 +3923,33 @@ function handleAction(target) {
     const panel = target.dataset.panel;
     const isClosing = state.dashboardDrilldown === panel;
     state.dashboardDrilldown = isClosing ? null : panel;
+    state.stageOverviewDrilldown = null;
     state.dashboardPage = 1;
     render();
+    return;
   }
 
   if (action === "close-dashboard-drilldown") {
     state.dashboardDrilldown = null;
     state.dashboardPage = 1;
     render();
+    return;
+  }
+
+  if (action === "toggle-stage-overview") {
+    const stage = target.dataset.stage;
+    const isClosing = state.stageOverviewDrilldown === stage;
+    state.stageOverviewDrilldown = isClosing ? null : stage;
+    state.dashboardDrilldown = null;
+    state.dashboardPage = 1;
+    render();
+    return;
+  }
+
+  if (action === "close-stage-overview") {
+    state.stageOverviewDrilldown = null;
+    render();
+    return;
   }
 
   if (action === "open-track-modal") {
@@ -4031,6 +4209,8 @@ document.addEventListener("change", (event) => {
     state.dashboardYear = event.target.value;
     state.dashboardPage = 1;
     state.dashboardCounselingPage = 1;
+    state.dashboardDrilldown = null;
+    state.stageOverviewDrilldown = null;
     render();
   }
 
@@ -4038,6 +4218,8 @@ document.addEventListener("change", (event) => {
     state.dashboardSemester = event.target.value;
     state.dashboardPage = 1;
     state.dashboardCounselingPage = 1;
+    state.dashboardDrilldown = null;
+    state.stageOverviewDrilldown = null;
     render();
   }
 
@@ -4045,6 +4227,8 @@ document.addEventListener("change", (event) => {
     state.dashboardStage = event.target.value;
     state.dashboardPage = 1;
     state.dashboardCounselingPage = 1;
+    state.dashboardDrilldown = null;
+    state.stageOverviewDrilldown = null;
     render();
   }
 

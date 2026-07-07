@@ -557,6 +557,224 @@ button {
   border-top: 4px solid var(--primary);
 }
 
+.stage-overview-panel {
+  border-top: 4px solid var(--primary);
+}
+
+.stage-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.stage-overview-card {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  padding: 18px;
+  color: inherit;
+  text-align: left;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-left: 5px solid var(--stage-color);
+  border-radius: 8px;
+  font: inherit;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.stage-overview-card:hover,
+.stage-overview-card:focus-visible,
+.stage-overview-card.is-active {
+  border-color: var(--primary);
+  box-shadow: var(--shadow);
+  outline: none;
+  transform: translateY(-1px);
+}
+
+.stage-overview-card.is-active {
+  background: var(--primary-soft);
+}
+
+.stage-overview-card-head,
+.stage-overview-rate {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+}
+
+.stage-overview-title {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 850;
+}
+
+.stage-overview-count {
+  flex: none;
+  font-size: 30px;
+  font-weight: 850;
+  line-height: 1;
+}
+
+.stage-overview-rate {
+  align-items: baseline;
+}
+
+.stage-overview-rate strong {
+  font-size: 15px;
+}
+
+.stage-overview-rate span,
+.stage-overview-meta {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.stage-overview-drilldown {
+  overflow: hidden;
+  border-left: 4px solid var(--primary);
+  animation: dashboardSlideDown 0.24s ease-out;
+}
+
+.stage-track-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.stage-track-card {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  padding: 13px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--track-color);
+  border-radius: 8px;
+}
+
+.stage-track-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+}
+
+.stage-track-head strong {
+  flex: none;
+  font-size: 20px;
+}
+
+.stage-track-desc {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.stage-track-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.stage-track-stats span {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  padding: 7px 4px;
+  text-align: center;
+  background: var(--surface-soft);
+  border-radius: 7px;
+}
+
+.stage-track-stats strong {
+  font-size: 16px;
+}
+
+.stage-track-stats small {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.stage-track-modules {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.stage-track-modules span {
+  max-width: 100%;
+  padding: 3px 7px;
+  overflow-wrap: anywhere;
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.stage-track-students {
+  display: grid;
+  gap: 6px;
+}
+
+.stage-track-student {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+  padding: 8px;
+  color: inherit;
+  text-align: left;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  font: inherit;
+}
+
+.stage-track-student:hover,
+.stage-track-student:focus-visible {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+  outline: none;
+}
+
+.stage-track-student span {
+  min-width: 0;
+}
+
+.stage-track-student strong,
+.stage-track-student small {
+  display: block;
+}
+
+.stage-track-student small {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.empty-inline {
+  margin: 0;
+  padding: 10px;
+  color: var(--muted);
+  text-align: center;
+  background: var(--surface-soft);
+  border: 1px dashed var(--line-strong);
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 750;
+}
+
 .course-dashboard-stack {
   display: grid;
   gap: 14px;
@@ -2326,6 +2544,7 @@ button {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .stage-track-grid,
   .active-track-grid,
   .course-dashboard-grid.is-advanced {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -2478,10 +2697,17 @@ button {
     flex-direction: column;
   }
 
+  .stage-overview-grid,
+  .stage-track-grid,
   .active-track-grid,
   .course-dashboard-grid.is-intermediate,
   .course-dashboard-grid.is-advanced {
     grid-template-columns: 1fr;
+  }
+
+  .stage-overview-card-head,
+  .stage-overview-rate {
+    flex-direction: column;
   }
 
   .counseling-form {
