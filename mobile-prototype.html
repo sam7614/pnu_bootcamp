@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PNU 부트캠프 모바일 프로토타입</title>
+    <style>
+      :root {
+        --device-w: 393px;
+        --device-h: 852px;
+        --device-scale: 1;
+        --ink: #111827;
+        --muted: #64748b;
+        --line: #cbd5e1;
+        --panel: #ffffff;
+        --bg: #eef4fb;
+        --navy: #0b3a75;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        overflow: hidden;
+        color: var(--ink);
+        font-family: "Segoe UI", "Noto Sans KR", Arial, sans-serif;
+        background:
+          linear-gradient(135deg, rgba(11, 58, 117, 0.12), rgba(15, 159, 143, 0.1)),
+          var(--bg);
+      }
+
+      .prototype {
+        display: grid;
+        grid-template-columns: 300px minmax(0, 1fr);
+        min-height: 100vh;
+      }
+
+      .control-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        padding: 28px;
+        border-right: 1px solid rgba(148, 163, 184, 0.5);
+        background: rgba(255, 255, 255, 0.82);
+        backdrop-filter: blur(18px);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .brand-mark {
+        display: grid;
+        place-items: center;
+        width: 46px;
+        height: 46px;
+        border-radius: 12px;
+        color: #ffffff;
+        font-size: 24px;
+        font-weight: 800;
+        background: var(--navy);
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 22px;
+        line-height: 1.2;
+      }
+
+      .subtitle {
+        margin: 4px 0 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .control-group {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .control-label {
+        color: #334155;
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .device-list {
+        display: grid;
+        gap: 8px;
+      }
+
+      button {
+        min-height: 42px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        color: #1f2937;
+        font: inherit;
+        font-weight: 800;
+        background: #ffffff;
+        cursor: pointer;
+      }
+
+      button:hover,
+      button.is-active {
+        border-color: #0b3a75;
+        color: #0b3a75;
+        background: #e7f0fb;
+      }
+
+      .button-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .meta {
+        display: grid;
+        gap: 8px;
+        margin-top: auto;
+        padding: 16px;
+        border: 1px solid #dbe5f1;
+        border-radius: 12px;
+        color: #475569;
+        background: #f8fafc;
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      .meta strong {
+        display: block;
+        color: #0f172a;
+        font-size: 15px;
+      }
+
+      .stage {
+        display: grid;
+        place-items: center;
+        min-width: 0;
+        padding: 24px;
+        overflow: hidden;
+      }
+
+      .phone-wrap {
+        display: grid;
+        justify-items: center;
+        gap: 14px;
+      }
+
+      .device-name {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 38px;
+        padding: 0 16px;
+        border: 1px solid rgba(148, 163, 184, 0.55);
+        border-radius: 999px;
+        color: #1e293b;
+        background: rgba(255, 255, 255, 0.86);
+        box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      .device-shell {
+        position: relative;
+        width: calc(var(--device-w) + 30px);
+        height: calc(var(--device-h) + 62px);
+        padding: 15px;
+        border: 1px solid #0f172a;
+        border-radius: 42px;
+        background:
+          linear-gradient(145deg, #1f2937, #020617 45%, #111827);
+        box-shadow:
+          0 38px 90px rgba(15, 23, 42, 0.32),
+          inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+        transform: scale(var(--device-scale));
+        transform-origin: top center;
+      }
+
+      .device-shell::before {
+        content: "";
+        position: absolute;
+        top: 7px;
+        left: 50%;
+        width: 94px;
+        height: 26px;
+        border-radius: 0 0 16px 16px;
+        background: #020617;
+        transform: translateX(-50%);
+        z-index: 3;
+      }
+
+      .device-shell::after {
+        content: "";
+        position: absolute;
+        right: -4px;
+        top: 148px;
+        width: 3px;
+        height: 76px;
+        border-radius: 8px;
+        background: #111827;
+      }
+
+      .screen {
+        position: relative;
+        width: var(--device-w);
+        height: var(--device-h);
+        overflow: hidden;
+        border-radius: 30px;
+        background: #ffffff;
+      }
+
+      .statusbar {
+        pointer-events: none;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 2;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 26px;
+        padding: 0 22px;
+        color: #0f172a;
+        font-size: 11px;
+        font-weight: 900;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0));
+      }
+
+      .status-icons {
+        letter-spacing: 2px;
+      }
+
+      iframe {
+        display: block;
+        width: 100%;
+        height: 100%;
+        border: 0;
+        background: #ffffff;
+      }
+
+      .home-indicator {
+        position: absolute;
+        left: 50%;
+        bottom: 9px;
+        width: 122px;
+        height: 5px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.82);
+        transform: translateX(-50%);
+      }
+
+      @media (max-width: 900px) {
+        body {
+          overflow: auto;
+        }
+
+        .prototype {
+          grid-template-columns: 1fr;
+        }
+
+        .control-panel {
+          border-right: 0;
+          border-bottom: 1px solid rgba(148, 163, 184, 0.5);
+        }
+
+        .meta {
+          margin-top: 0;
+        }
+
+        .stage {
+          min-height: 720px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="prototype">
+      <aside class="control-panel">
+        <div class="brand">
+          <div class="brand-mark">P</div>
+          <div>
+            <h1>모바일 프로토타입</h1>
+            <p class="subtitle">PNU 부트캠프 관리 웹앱</p>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <div class="control-label">기기 크기</div>
+          <div class="device-list" id="device-list">
+            <button class="is-active" type="button" data-device="iphone">iPhone 15</button>
+            <button type="button" data-device="galaxy">Galaxy S24</button>
+            <button type="button" data-device="compact">Compact</button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <div class="control-label">방향</div>
+          <div class="button-row">
+            <button class="is-active" type="button" data-orientation="portrait">세로</button>
+            <button type="button" data-orientation="landscape">가로</button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <div class="control-label">화면</div>
+          <div class="button-row">
+            <button type="button" id="reload-frame">새로고침</button>
+            <button type="button" id="open-app">원본 열기</button>
+          </div>
+        </div>
+
+        <div class="meta">
+          <strong id="device-meta">393 × 852</strong>
+          <span>브라우저 안에서 휴대폰 크기로 렌더링한 프로토타입입니다.</span>
+        </div>
+      </aside>
+
+      <section class="stage" aria-label="휴대폰 프레임 미리보기">
+        <div class="phone-wrap">
+          <div class="device-name" id="device-title">iPhone 15 · 세로</div>
+          <div class="device-shell" id="device-shell">
+            <div class="screen">
+              <div class="statusbar">
+                <span id="clock">09:41</span>
+                <span class="status-icons">5G ◼</span>
+              </div>
+              <iframe id="app-frame" src="./index.html" title="PNU 부트캠프 관리 웹앱 모바일 미리보기"></iframe>
+            </div>
+            <div class="home-indicator"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const devices = {
+        iphone: { name: "iPhone 15", w: 393, h: 852 },
+        galaxy: { name: "Galaxy S24", w: 384, h: 832 },
+        compact: { name: "Compact", w: 360, h: 740 }
+      };
+
+      const state = {
+        device: "iphone",
+        orientation: "portrait"
+      };
+
+      const shell = document.getElementById("device-shell");
+      const title = document.getElementById("device-title");
+      const meta = document.getElementById("device-meta");
+      const frame = document.getElementById("app-frame");
+
+      function setActive(selector, value, attr) {
+        document.querySelectorAll(selector).forEach((button) => {
+          button.classList.toggle("is-active", button.dataset[attr] === value);
+        });
+      }
+
+      function fitDevice(width, height) {
+        const panel = window.matchMedia("(max-width: 900px)").matches ? 0 : 300;
+        const availableWidth = Math.max(window.innerWidth - panel - 96, 320);
+        const availableHeight = Math.max(window.innerHeight - 112, 520);
+        const shellWidth = width + 30;
+        const shellHeight = height + 62;
+        const scale = Math.min(1, availableWidth / shellWidth, availableHeight / shellHeight);
+        document.documentElement.style.setProperty("--device-scale", Math.max(0.55, scale).toFixed(3));
+      }
+
+      function renderDevice() {
+        const preset = devices[state.device];
+        const rotated = state.orientation === "landscape";
+        const width = rotated ? preset.h : preset.w;
+        const height = rotated ? preset.w : preset.h;
+
+        document.documentElement.style.setProperty("--device-w", `${width}px`);
+        document.documentElement.style.setProperty("--device-h", `${height}px`);
+        title.textContent = `${preset.name} · ${state.orientation === "portrait" ? "세로" : "가로"}`;
+        meta.textContent = `${width} × ${height}`;
+        setActive("[data-device]", state.device, "device");
+        setActive("[data-orientation]", state.orientation, "orientation");
+        fitDevice(width, height);
+      }
+
+      document.getElementById("device-list").addEventListener("click", (event) => {
+        const button = event.target.closest("[data-device]");
+        if (!button) return;
+        state.device = button.dataset.device;
+        renderDevice();
+      });
+
+      document.querySelectorAll("[data-orientation]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.orientation = button.dataset.orientation;
+          renderDevice();
+        });
+      });
+
+      document.getElementById("reload-frame").addEventListener("click", () => {
+        frame.contentWindow.location.reload();
+      });
+
+      document.getElementById("open-app").addEventListener("click", () => {
+        window.open("./index.html", "_blank", "noopener");
+      });
+
+      window.addEventListener("resize", renderDevice);
+      renderDevice();
+    </script>
+  </body>
+</html>
