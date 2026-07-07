@@ -12,9 +12,12 @@
         --ink: #111827;
         --muted: #64748b;
         --line: #cbd5e1;
+        --line-strong: #94a3b8;
         --panel: #ffffff;
+        --soft: #f8fafc;
         --bg: #eef4fb;
         --navy: #0b3a75;
+        --teal: #0f9f8f;
       }
 
       * {
@@ -24,7 +27,7 @@
       body {
         margin: 0;
         min-height: 100vh;
-        overflow: hidden;
+        overflow: auto;
         color: var(--ink);
         font-family: "Segoe UI", "Noto Sans KR", Arial, sans-serif;
         background:
@@ -34,17 +37,22 @@
 
       .prototype {
         display: grid;
-        grid-template-columns: 300px minmax(0, 1fr);
+        grid-template-columns: 320px minmax(0, 1fr);
         min-height: 100vh;
       }
 
       .control-panel {
+        position: sticky;
+        top: 0;
         display: flex;
         flex-direction: column;
         gap: 18px;
+        height: 100vh;
+        min-width: 0;
         padding: 28px;
+        overflow-y: auto;
         border-right: 1px solid rgba(148, 163, 184, 0.5);
-        background: rgba(255, 255, 255, 0.82);
+        background: rgba(255, 255, 255, 0.86);
         backdrop-filter: blur(18px);
       }
 
@@ -59,35 +67,40 @@
         place-items: center;
         width: 46px;
         height: 46px;
+        flex: 0 0 auto;
         border-radius: 12px;
         color: #ffffff;
         font-size: 24px;
-        font-weight: 800;
+        font-weight: 900;
         background: var(--navy);
       }
 
-      h1 {
+      h1,
+      p {
         margin: 0;
+      }
+
+      h1 {
         font-size: 22px;
         line-height: 1.2;
       }
 
       .subtitle {
-        margin: 4px 0 0;
+        margin-top: 5px;
         color: var(--muted);
         font-size: 14px;
+        line-height: 1.45;
       }
 
       .control-group {
-        display: flex;
-        flex-direction: column;
+        display: grid;
         gap: 10px;
       }
 
       .control-label {
         color: #334155;
         font-size: 13px;
-        font-weight: 800;
+        font-weight: 850;
       }
 
       .device-list {
@@ -97,20 +110,29 @@
 
       button {
         min-height: 42px;
+        padding: 0 12px;
         border: 1px solid var(--line);
         border-radius: 10px;
         color: #1f2937;
         font: inherit;
-        font-weight: 800;
+        font-weight: 850;
         background: #ffffff;
         cursor: pointer;
+        transition: border-color 0.18s ease, background 0.18s ease, color 0.18s ease, transform 0.18s ease;
       }
 
       button:hover,
+      button:focus-visible,
       button.is-active {
-        border-color: #0b3a75;
-        color: #0b3a75;
+        border-color: var(--navy);
+        color: var(--navy);
         background: #e7f0fb;
+        outline: none;
+      }
+
+      button:hover,
+      button:focus-visible {
+        transform: translateY(-1px);
       }
 
       .button-row {
@@ -127,9 +149,9 @@
         border: 1px solid #dbe5f1;
         border-radius: 12px;
         color: #475569;
-        background: #f8fafc;
+        background: var(--soft);
         font-size: 13px;
-        line-height: 1.5;
+        line-height: 1.55;
       }
 
       .meta strong {
@@ -138,11 +160,32 @@
         font-size: 15px;
       }
 
+      .checklist {
+        display: grid;
+        gap: 8px;
+        padding: 14px;
+        border: 1px dashed #b6c6d8;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.72);
+        color: #475569;
+        font-size: 13px;
+        line-height: 1.45;
+      }
+
+      .checklist strong {
+        color: #0f172a;
+      }
+
+      .checklist span {
+        display: block;
+      }
+
       .stage {
         display: grid;
-        place-items: center;
         min-width: 0;
-        padding: 24px;
+        min-height: 100vh;
+        place-items: center;
+        padding: 28px;
         overflow: hidden;
       }
 
@@ -161,10 +204,10 @@
         border: 1px solid rgba(148, 163, 184, 0.55);
         border-radius: 999px;
         color: #1e293b;
-        background: rgba(255, 255, 255, 0.86);
+        background: rgba(255, 255, 255, 0.88);
         box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
         font-size: 14px;
-        font-weight: 800;
+        font-weight: 850;
       }
 
       .device-shell {
@@ -174,13 +217,13 @@
         padding: 15px;
         border: 1px solid #0f172a;
         border-radius: 42px;
-        background:
-          linear-gradient(145deg, #1f2937, #020617 45%, #111827);
+        background: linear-gradient(145deg, #1f2937, #020617 45%, #111827);
         box-shadow:
           0 38px 90px rgba(15, 23, 42, 0.32),
           inset 0 0 0 1px rgba(255, 255, 255, 0.12);
         transform: scale(var(--device-scale));
         transform-origin: top center;
+        transition: width 0.18s ease, height 0.18s ease, transform 0.18s ease;
       }
 
       .device-shell::before {
@@ -188,12 +231,12 @@
         position: absolute;
         top: 7px;
         left: 50%;
+        z-index: 4;
         width: 94px;
         height: 26px;
         border-radius: 0 0 16px 16px;
         background: #020617;
         transform: translateX(-50%);
-        z-index: 3;
       }
 
       .device-shell::after {
@@ -222,20 +265,29 @@
         top: 0;
         left: 0;
         right: 0;
-        z-index: 2;
+        z-index: 3;
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        height: 26px;
+        justify-content: space-between;
+        height: 28px;
         padding: 0 22px;
         color: #0f172a;
         font-size: 11px;
         font-weight: 900;
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0));
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.84));
       }
 
       .status-icons {
-        letter-spacing: 2px;
+        letter-spacing: 1.5px;
+      }
+
+      .screen-content {
+        position: absolute;
+        top: 28px;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background: #ffffff;
       }
 
       iframe {
@@ -257,16 +309,14 @@
         transform: translateX(-50%);
       }
 
-      @media (max-width: 900px) {
-        body {
-          overflow: auto;
-        }
-
+      @media (max-width: 980px) {
         .prototype {
           grid-template-columns: 1fr;
         }
 
         .control-panel {
+          position: static;
+          height: auto;
           border-right: 0;
           border-bottom: 1px solid rgba(148, 163, 184, 0.5);
         }
@@ -277,6 +327,21 @@
 
         .stage {
           min-height: 720px;
+          padding: 22px 14px 34px;
+        }
+      }
+
+      @media (max-width: 620px) {
+        .control-panel {
+          padding: 22px 18px;
+        }
+
+        .brand {
+          align-items: flex-start;
+        }
+
+        .button-row {
+          grid-template-columns: 1fr;
         }
       }
     </style>
@@ -288,7 +353,7 @@
           <div class="brand-mark">P</div>
           <div>
             <h1>모바일 프로토타입</h1>
-            <p class="subtitle">PNU 부트캠프 관리 웹앱</p>
+            <p class="subtitle">PNU 부트캠프 훈련생 관리 웹앱을 휴대폰 크기로 확인합니다.</p>
           </div>
         </div>
 
@@ -317,9 +382,15 @@
           </div>
         </div>
 
+        <div class="checklist">
+          <strong>확인 포인트</strong>
+          <span>메뉴와 카드가 화면 밖으로 밀리지 않는지 확인합니다.</span>
+          <span>대시보드 카드, 학생 목록, 수강이력 화면을 세로·가로 방향에서 비교합니다.</span>
+        </div>
+
         <div class="meta">
           <strong id="device-meta">393 × 852</strong>
-          <span>브라우저 안에서 휴대폰 크기로 렌더링한 프로토타입입니다.</span>
+          <span>선택한 휴대폰 크기 안에서 실제 웹앱을 렌더링합니다. 기기와 방향을 바꿔 상담 현장에서 보기 좋은 화면인지 점검할 수 있습니다.</span>
         </div>
       </aside>
 
@@ -330,9 +401,11 @@
             <div class="screen">
               <div class="statusbar">
                 <span id="clock">09:41</span>
-                <span class="status-icons">5G ◼</span>
+                <span class="status-icons">5G 100%</span>
               </div>
-              <iframe id="app-frame" src="./index.html" title="PNU 부트캠프 관리 웹앱 모바일 미리보기"></iframe>
+              <div class="screen-content">
+                <iframe id="app-frame" src="./index.html" title="PNU 부트캠프 관리 웹앱 모바일 미리보기"></iframe>
+              </div>
             </div>
             <div class="home-indicator"></div>
           </div>
@@ -364,13 +437,13 @@
       }
 
       function fitDevice(width, height) {
-        const panel = window.matchMedia("(max-width: 900px)").matches ? 0 : 300;
+        const panel = window.matchMedia("(max-width: 980px)").matches ? 0 : 320;
         const availableWidth = Math.max(window.innerWidth - panel - 96, 320);
-        const availableHeight = Math.max(window.innerHeight - 112, 520);
+        const availableHeight = Math.max(window.innerHeight - 120, 520);
         const shellWidth = width + 30;
         const shellHeight = height + 62;
         const scale = Math.min(1, availableWidth / shellWidth, availableHeight / shellHeight);
-        document.documentElement.style.setProperty("--device-scale", Math.max(0.55, scale).toFixed(3));
+        document.documentElement.style.setProperty("--device-scale", Math.max(0.52, scale).toFixed(3));
       }
 
       function renderDevice() {
@@ -378,10 +451,11 @@
         const rotated = state.orientation === "landscape";
         const width = rotated ? preset.h : preset.w;
         const height = rotated ? preset.w : preset.h;
+        const orientationLabel = state.orientation === "portrait" ? "세로" : "가로";
 
         document.documentElement.style.setProperty("--device-w", `${width}px`);
         document.documentElement.style.setProperty("--device-h", `${height}px`);
-        title.textContent = `${preset.name} · ${state.orientation === "portrait" ? "세로" : "가로"}`;
+        title.textContent = `${preset.name} · ${orientationLabel}`;
         meta.textContent = `${width} × ${height}`;
         setActive("[data-device]", state.device, "device");
         setActive("[data-orientation]", state.orientation, "orientation");
