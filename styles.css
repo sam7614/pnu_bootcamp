@@ -634,6 +634,57 @@ button {
   line-height: 1.45;
 }
 
+.stage-overview-track-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  min-width: 0;
+  padding-top: 2px;
+}
+
+.stage-overview-track-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 7px 8px;
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+}
+
+.stage-overview-track-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 850;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.stage-overview-track-counts {
+  display: grid;
+  gap: 1px;
+  flex: none;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.stage-overview-track-counts strong {
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.stage-overview-track-counts span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 750;
+  line-height: 1.2;
+}
+
 .stage-overview-drilldown {
   overflow: hidden;
   border-left: 4px solid var(--primary);
@@ -2708,6 +2759,10 @@ button {
   .stage-overview-card-head,
   .stage-overview-rate {
     flex-direction: column;
+  }
+
+  .stage-overview-track-list {
+    grid-template-columns: 1fr;
   }
 
   .counseling-form {

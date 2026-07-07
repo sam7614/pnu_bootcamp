@@ -1051,8 +1051,25 @@ function renderStageOverviewCard(stage, rows, color) {
       <span class="progress" aria-label="${h(stage)} 평균 이수진행률">
         <span style="width:${summary.average}%; --bar-color:${color}"></span>
       </span>
+      <span class="stage-overview-track-list" aria-label="${h(stage)} 트랙별 이수 현황">
+        ${summary.trackSummaries.map(renderStageOverviewTrackRow).join("")}
+      </span>
       <span class="stage-overview-meta">클릭하면 ${h(stage)} 하위 트랙별 이수자 현황을 봅니다.</span>
     </button>
+  `;
+}
+
+function renderStageOverviewTrackRow(item) {
+  return `
+    <span class="stage-overview-track-row">
+      <span class="stage-overview-track-name">
+        <span class="track-dot" style="--track-color:${item.track.color}"></span>${h(item.track.name)}
+      </span>
+      <span class="stage-overview-track-counts">
+        <strong>이수 ${item.completed}명</strong>
+        <span>이수중 ${item.inProgress}명</span>
+      </span>
+    </span>
   `;
 }
 
