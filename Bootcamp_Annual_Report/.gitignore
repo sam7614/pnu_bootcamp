@@ -1,0 +1,41 @@
+# 부산대학교 첨단산업 인재양성 부트캠프사업 연차실적보고서
+# 기본 원칙: 원본·개인정보·재정정보는 공유 저장소에 올리지 않음
+
+# 개인/로컬 전용
+99_Private_Local/**
+!99_Private_Local/README.md
+
+# 원본 자료 전체(빈 폴더 구조만 로컬에서 유지)
+01_Source_Documents/**
+
+# 공식 양식·참고 원문
+00_Project_Control/01_Official_Templates/**
+00_Project_Control/02_Writing_References/*
+!00_Project_Control/02_Writing_References/*.md
+
+# 증빙 원본
+05_Team4_Evidence/02_Evidence_Originals/**
+
+# 프로젝트 루트에 임시로 놓인 원본 문서
+/*.pdf
+/*.hwp
+/*.hwpx
+/*.xlsx
+/*.xls
+
+# 임시·잠금·백업 파일
+~$*
+*.tmp
+*.temp
+*.bak
+*.autosave
+Thumbs.db
+.DS_Store
+tmp/
+
+# 개인정보 또는 재정 원자료로 흔히 쓰이는 로컬 보안 파일명
+*개인정보*
+*주민등록*
+*계좌번호*
+*급여대장*
+*지출결의서*
